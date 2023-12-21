@@ -1,1 +1,28 @@
+Task 9
+docker exec -it my-mongo mongo
+> use my_db
+switched to db my_db
+> show collections
+posts
+users
 
+Task 10
+Из коллекции постов выберите документы, в которых среди топиков
+встречается ‘as’, идентификатор автора содержит example.ru, а score больше
+100.
+
+db.posts.find({"topics": /.as./, "author": /.example.ru./, "score": {$gt: 100}})
+
+Task 11
+Одним запросом добавьте два документа к коллекции posts:
+1) creation_date — текущее время, автор — skbx@example.com, topics
+должен быть списком из одного элемента “mongodb”;
+2) creation_date — 31 декабря 2021 года, автор — skbx@example.ru.
+
+db.posts.insertMany([{"creation_date": new Date(), "author": "skbx@example.com", "topics": ["mongodb"]}, {"creation_date": new Date("2021-12-31"), "author": "skbx@example.ru"}]);
+
+Task 12
+Посчитайте сумму кармы по первым буквам имён пользователей для тех
+пользователей, у которых больше 300 визитов.
+
+db.users.aggregate([{$match: {count_visits: {$gt: 300}}}, {$project: {_id: 0, name: 1, karma: 1}}, {$group: { _id: {$substr: ["$name", 0, 1]}, sum_karma: {$sum: "$karma"}}}]);
